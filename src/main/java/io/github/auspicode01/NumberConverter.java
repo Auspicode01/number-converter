@@ -1,15 +1,19 @@
 package io.github.auspicode01;
 
+import io.github.auspicode01.exception.InvalidInputException;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
 import static io.github.auspicode01.Constants.*;
+import static io.github.auspicode01.exception.ErrorMessages.INVALID_INPUT;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class NumberConverter {
 
     public static String convertNumber(Integer number) {
-        if (number < 10) {
+        if (number < 0 || number > 999999) {
+            throw new InvalidInputException(INVALID_INPUT);
+        } else if (number < 10) {
             return convertUnits(number);
         } else if (number < 100) {
             return convertTens(number);
@@ -17,19 +21,19 @@ public class NumberConverter {
             return convertHundreds(number);
         } else if (number < 10000) {
             return convertThousands(number);
-        } else if (number < 1000000) {
-            return convertTensOfThousands(number);
+        } else {
+            return convertHundredsOfThousandsAndTensOfThousands(number);
         }
-        return "";
     }
 
     private static String convertUnits(Integer number) {
+        String result = "";
         for (Units u : Units.values()) {
             if (number == u.getNumber()) {
-                return u.getNumberName();
+                result = u.getNumberName();
             }
         }
-        return "";
+        return result;
     }
 
     private static String convertTens(Integer number) {
@@ -113,9 +117,9 @@ public class NumberConverter {
         }
     }
 
-    private static String convertTensOfThousands(Integer number) {
+    private static String convertHundredsOfThousandsAndTensOfThousands(Integer number) {
         Integer secondClass = getSecondClass(number);
-        String result = "";
+        String result;
         if (secondClass < 100) {
             result = convertTens(secondClass).concat(" ").concat(THOUSANDS_NUMBER_NAME);
         } else {
@@ -145,7 +149,7 @@ public class NumberConverter {
     }
 
     private static Integer getSecondClass(Integer number) {
-        Integer result = 0;
+        Integer result;
         result = number / 10;
         for (int i = 0; i < 2; i++) {
             result = result / 10;

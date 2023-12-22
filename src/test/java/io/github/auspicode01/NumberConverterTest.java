@@ -1,9 +1,13 @@
 package io.github.auspicode01;
 
+import io.github.auspicode01.exception.InvalidInputException;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
+import org.junit.jupiter.params.provider.ValueSource;
 
+import static io.github.auspicode01.exception.ErrorMessages.INVALID_INPUT;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class NumberConverterTest {
 
@@ -53,5 +57,13 @@ class NumberConverterTest {
         String result = NumberConverter.convertNumber(number);
 
         assertThat(result).isEqualTo(expectedResult);
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = {"-123", "1000000"})
+    void whenConvertInvalidNumber_ThrowInvalidInputException(Integer number) {
+        InvalidInputException invalidInputException = assertThrows(InvalidInputException.class, () -> NumberConverter.convertNumber(number));
+
+        assertThat(invalidInputException.getMessage()).isEqualTo(INVALID_INPUT);
     }
 }
